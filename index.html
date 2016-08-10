@@ -27,14 +27,6 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-xs-12">
-      <video poster="http://i.imgur.com/cAvqVdRh.jpg" autoplay muted="muted" loop style="width: 680px; height: 383px;">
-          <source src="http://i.imgur.com/cAvqVdR.mp4" type="video/mp4">
-      </video>
-
-      <video autoplay loop poster="http://i.imgur.com/wusYXgKl.jpg" id="backgroundgif">
-          <source src="http://i.imgur.com/wusYXgK.webm" type="video/webm">
-          <source src="http://i.imgur.com/wusYXgK.mp4" type="video/mp4">
-      </video>
       <div class="content" id="content"></div>
     </div>
   </div>
@@ -42,6 +34,9 @@
 
 <style type="text/css">
   img{
+    max-width: 100%;
+  }
+  video{
     max-width: 100%;
   }
 </style>
@@ -71,9 +66,13 @@
         if(array[i].data){
 
           var url = array[i].data.url;
-          var ext = url.substr(array[i].data.url.length - 3);
+          var ext = url.substr(url.length - 3);
 
-          if(ext == "jpg" || ext == "gif" || ext == "png"){
+          if (ext == 'ifv') {
+            ext = 'gifv'
+          }
+
+          if(ext == "jpg" || ext == "gif" || ext == "png" || ext == 'gifv'){
 
             var h3 = $(document.createElement('h3'))
             h3.attr('data-url', array[i].data.permalink);
@@ -87,25 +86,36 @@
 
             $('.content').append(h3);
 
+            if (ext == 'gifv') {
+
+              var video = document.createElement('video');
+              video.poster = url.replace('.gifv', '.jpg');
+              video.autoplay = true;
+              video.loop = true;
+              video.defaultMuted = true;
+
+              var sourceMp4 = document.createElement('source');
+              sourceMp4.src = url.replace('.gifv', '.mp4');
+              sourceMp4.type = 'video/mp4';
+
+              var sourceWebm = document.createElement('source');
+              sourceWebm.src = url.replace('.gifv', '.webm');
+              sourceWebm.type = 'video/webm';
+
+              video.appendChild(sourceMp4);
+              video.appendChild(sourceWebm);
+
+              $('.content').append(video);
+            }
 
 
-            // if (ext == 'ifv') {
-            //   var video = $(document.createElement('video'));
-            //   video.attr('poster', url);
-            //   video.attr('preload' );
-            //
-            //
-            //   <video poster="http://i.imgur.com/cAvqVdRh.jpg" autoplay muted="muted" loop style="width: 680px; height: 383px;">
-            //       <source src="http://i.imgur.com/cAvqVdR.mp4" type="video/mp4">
-            //   </video>
-            //
-            // }
+            if(ext == "jpg" || ext == "gif" || ext == "png"){
+              var img = $(document.createElement('img'))
 
-            var img = $(document.createElement('img'))
+              img.attr('src', url);
 
-            img.attr('src', url);
-
-            $('.content').append(img);
+              $('.content').append(img);
+            }
           }
 
         }
@@ -131,7 +141,9 @@
 
   $(function(){
     var subreddit = getUrlParameter('sub');
-    getSubPics(subreddit);
+    if (subreddit != undefined) {
+      getSubPics(subreddit);
+    }
 
     $("#subreddit_form").submit(function(e){
       e.preventDefault();
