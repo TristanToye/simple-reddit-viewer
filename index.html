@@ -27,6 +27,14 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-xs-12">
+      <video poster="http://i.imgur.com/cAvqVdRh.jpg" autoplay muted="muted" loop style="width: 680px; height: 383px;">
+          <source src="http://i.imgur.com/cAvqVdR.mp4" type="video/mp4">
+      </video>
+
+      <video autoplay loop poster="http://i.imgur.com/wusYXgKl.jpg" id="backgroundgif">
+          <source src="http://i.imgur.com/wusYXgK.webm" type="video/webm">
+          <source src="http://i.imgur.com/wusYXgK.mp4" type="video/mp4">
+      </video>
       <div class="content" id="content"></div>
     </div>
   </div>
@@ -62,29 +70,43 @@
 
         if(array[i].data){
 
-          var h3 = $(document.createElement('h3'))
-          h3.attr('data-url', array[i].data.permalink);
+          var url = array[i].data.url;
+          var ext = url.substr(array[i].data.url.length - 3);
 
-          var a = $(document.createElement('a'));
-          a.attr('href', "http://www.reddit.com" + array[i].data.permalink);
-          a.attr('target', '_blank');
-          a.html(array[i].data.title);
+          if(ext == "jpg" || ext == "gif" || ext == "png"){
 
-          h3.append(a);
+            var h3 = $(document.createElement('h3'))
+            h3.attr('data-url', array[i].data.permalink);
 
-          $('.content').append(h3);
+            var a = $(document.createElement('a'));
+            a.attr('href', "http://www.reddit.com" + array[i].data.permalink);
+            a.attr('target', '_blank');
+            a.html(array[i].data.title);
 
-          var img = $(document.createElement('img'))
+            h3.append(a);
 
-          var ext = array[i].data.url.substr(array[i].data.url.length - 3);
+            $('.content').append(h3);
 
-          if(ext == "jpg" || ext == "gif" || ext == "png" || ext == "ifv"){
-            img.attr('src', array[i].data.url);
-          }else{
-            img.attr('src', array[i].data.url + '.jpg');
+
+
+            // if (ext == 'ifv') {
+            //   var video = $(document.createElement('video'));
+            //   video.attr('poster', url);
+            //   video.attr('preload' );
+            //
+            //
+            //   <video poster="http://i.imgur.com/cAvqVdRh.jpg" autoplay muted="muted" loop style="width: 680px; height: 383px;">
+            //       <source src="http://i.imgur.com/cAvqVdR.mp4" type="video/mp4">
+            //   </video>
+            //
+            // }
+
+            var img = $(document.createElement('img'))
+
+            img.attr('src', url);
+
+            $('.content').append(img);
           }
-
-          $('.content').append(img);
 
         }
       }
