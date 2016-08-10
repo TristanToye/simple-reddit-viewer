@@ -1,0 +1,136 @@
+<html>
+<head>
+  <title>Reddit Image Viewer</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <!--<script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>-->
+  <link rel="stylesheet" type="text/css" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container-fluid">
+  <div class="row">
+
+    <form id="subreddit_form" name="subreddit_form" action="" method="post">
+      <div class="form-group">
+        <div class="col-xs-12 col-md-4">
+          <label>What Subreddit do you want to view?</label>
+        </div>
+        <div class="col-xs-12 col-md-8">
+          <input type="text" name="sub" id="sub" class="form-control">
+        </div>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="content" id="content"></div>
+    </div>
+  </div>
+</div>
+
+<style type="text/css">
+  img{
+    max-width: 100%;
+  }
+</style>
+
+<script type="text/javascript">
+
+  function getUrlParameter(sParam)
+  {
+    var sPageURL = window.location.search.substring(1);
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++)
+    {
+      var sParameterName = sURLVariables[i].split('=');
+      if (sParameterName[0] == sParam)
+      {
+        return sParameterName[1];
+      }
+    }
+  }
+
+  function getSubPics(subreddit){
+    $.get( "http://www.reddit.com/r/" + subreddit+ ".json", function( data ) {
+      array = data.data.children;
+      array_length = array.length;
+      for (i in array) {
+
+        if(array[i].data){
+
+          var h3 = $(document.createElement('h3'))
+          h3.attr('data-url', array[i].data.permalink);
+
+          var a = $(document.createElement('a'));
+          a.attr('href', "http://www.reddit.com" + array[i].data.permalink);
+          a.attr('target', '_blank');
+          a.html(array[i].data.title);
+
+          h3.append(a);
+
+          $('.content').append(h3);
+
+          var img = $(document.createElement('img'))
+
+          var ext = array[i].data.url.substr(array[i].data.url.length - 3);
+
+          if(ext == "jpg" || ext == "gif" || ext == "png" || ext == "ifv"){
+            img.attr('src', array[i].data.url);
+          }else{
+            img.attr('src', array[i].data.url + '.jpg');
+          }
+
+          $('.content').append(img);
+
+        }
+      }
+      // $('h3').click(function(){
+      // 	console.log($(this).attr('data-url'));
+      // 	getComments($(this).attr('data-url'));
+      // });
+    })
+  }
+
+  // function getComments(permalink){
+  // 	var frameSrc = "http://www.reddit.com" + permalink;
+  // 	console.log(frameSrc);
+
+  // 	$.get( frameSrc, function( data ) {
+  // 		$('#iframe').html(data);
+  // 	})
+ //    $('#iframe').attr("src",frameSrc);
+
+  // 	$('#myModal').modal()
+  // }
+
+  $(function(){
+    var subreddit = getUrlParameter('sub');
+    getSubPics(subreddit);
+
+    $("#subreddit_form").submit(function(e){
+      e.preventDefault();
+      $(".content").html("");
+      getSubPics($("#sub").val());
+    });
+  })
+</script>
+
+<!-- <div id="myModal" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">×</button>
+      <h3>Normal Page</h3>
+  </div>
+  <div class="modal-body">
+      <iframe id="iframe" src="" style="zoom:0.60" width="99.6%" height="250" frameborder="0"></iframe>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal">OK</button>
+  </div>
+</div> -->
+
+</body>
+</html>
